@@ -160,5 +160,13 @@
         android:layout_height="2dp"
         android:background="#DDDDDD"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/btn_save"
+        android:onClick="onSaveFilters"
+        android:layout_gravity="center_horizontal" />
+
 
 </LinearLayout>

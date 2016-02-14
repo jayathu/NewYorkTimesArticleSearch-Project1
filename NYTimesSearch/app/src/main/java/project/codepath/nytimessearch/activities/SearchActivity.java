@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -20,6 +21,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -33,11 +35,13 @@ import project.codepath.nytimessearch.R;
 import project.codepath.nytimessearch.adapters.ArticleRecyclerAdapter;
 import project.codepath.nytimessearch.models.Article;
 import project.codepath.nytimessearch.models.ArticleFactory;
+import project.codepath.nytimessearch.models.QueryFilters;
 
 public class SearchActivity extends AppCompatActivity {
 
     private String searchString;
-    //@Bind(R.id.gvResults)GridView gvResults;
+    private QueryFilters filters;
+
 
     @Bind(R.id.rvResults)RecyclerView rvResults;
     ArrayList<Article> articles;
@@ -52,6 +56,7 @@ public class SearchActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ButterKnife.bind(this);
+        filters = new QueryFilters();
 
         articles = new ArrayList<>();
         adapter = new ArticleRecyclerAdapter(articles);
@@ -136,13 +141,28 @@ public class SearchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode==2)
+        {
+            filters = (QueryFilters)Parcels.unwrap(data.getParcelableExtra("query_filters"));
+
+            Toast.makeText(this, "begin_date:"+filters.beginDate + "news_desk:"+ filters.news_desk + "sort:"+ filters.sortOrder, Toast.LENGTH_LONG).show();
+        }
+    }
+
     public void onSettingsAction(MenuItem menuItem) {
 
         Intent intent = new Intent(SearchActivity.this, Settings.class);
 
-        startActivity(intent);
+        intent.putExtra("query_filters", Parcels.wrap(filters));
+        startActivityForResult(intent, 2);
 
     }
+
 
     public void fetchArticles(String query, int page) {
 
