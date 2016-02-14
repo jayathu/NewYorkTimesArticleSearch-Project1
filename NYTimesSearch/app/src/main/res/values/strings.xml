@@ -8,6 +8,5 @@
     <string-array name="sort_order">
         <item>Newest</item>
         <item>Oldest</item>
-        <item>None</item>
     </string-array>
 </resources>

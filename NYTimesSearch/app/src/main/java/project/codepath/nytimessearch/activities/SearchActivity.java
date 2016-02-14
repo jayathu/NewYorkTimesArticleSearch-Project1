@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -27,6 +28,7 @@ import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import project.codepath.nytimessearch.DividerItemDecoration;
 import project.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
+import project.codepath.nytimessearch.ItemClickSupport;
 import project.codepath.nytimessearch.R;
 import project.codepath.nytimessearch.adapters.ArticleRecyclerAdapter;
 import project.codepath.nytimessearch.models.Article;
@@ -64,6 +66,9 @@ public class SearchActivity extends AppCompatActivity {
         rvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
+
+                //articles.clear();
+
                 fetchArticles(searchString, page);
                 int curSize = adapter.getItemCount();
                 adapter.notifyItemRangeInserted(curSize, articles.size() - 1);
@@ -71,16 +76,18 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-/*
-        rvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), ArticleDetails.class);
-                Article article = articles.get(position);
-                intent.putExtra("url", article.getWebUrl());
-                startActivity(intent);
-            }
-        });*/
+        ItemClickSupport.addTo(rvResults).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+
+                        Article article = articles.get(position);
+                        Intent intent = new Intent(getApplicationContext(), ArticleDetails.class);
+                        intent.putExtra("url", article.getWebUrl());
+                        startActivity(intent);
+                    }
+                }
+        );
 
     }
 
@@ -97,6 +104,8 @@ public class SearchActivity extends AppCompatActivity {
                 searchView.clearFocus();
 
                 searchString = query;
+                articles.clear();
+                adapter.notifyDataSetChanged();
                 fetchArticles(query, 0);
 
                 return true;
@@ -132,10 +141,9 @@ public class SearchActivity extends AppCompatActivity {
 
         startActivity(intent);
 
-        //Toast.makeText(this, "Settings ", Toast.LENGTH_SHORT).show();
     }
 
-    public ArrayList<Article> fetchArticles(String query, int page) {
+    public void fetchArticles(String query, int page) {
 
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
@@ -144,30 +152,22 @@ public class SearchActivity extends AppCompatActivity {
         params.put("page", page);
         params.put("q", query);
 
-        final ArrayList<Article> _articles = new ArrayList<>();
-
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //Log.d("DEBUG", response.toString());
 
                 JSONArray articleJsonResults = null;
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    //Log.d("DEBUG", articleJsonResults.toString());
 
-                    articles.clear();
                     articles.addAll(Article.fromJSONArray(articleJsonResults));
                     adapter.notifyDataSetChanged();
 
-                    //Log.d("DEBUG", articles.toString());
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
 
-
-        return _articles;
     }
 }

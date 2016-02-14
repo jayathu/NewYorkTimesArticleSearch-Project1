@@ -57,8 +57,6 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<ArticleRecycler
             Picasso.with(context).load(thumbnailUrl).into(thumbnail);
         }
 
-        //Picasso.with(context).load(Uri.parse(article.getWebUrl())).into(thumbnail);
-
     }
 
     @Override
