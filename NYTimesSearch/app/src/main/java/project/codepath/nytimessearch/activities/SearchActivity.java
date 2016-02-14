@@ -26,12 +26,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import project.codepath.nytimessearch.DividerItemDecoration;
+import project.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
 import project.codepath.nytimessearch.R;
 import project.codepath.nytimessearch.adapters.ArticleRecyclerAdapter;
 import project.codepath.nytimessearch.models.Article;
 
 public class SearchActivity extends AppCompatActivity {
 
+    private String searchString;
     //@Bind(R.id.gvResults)GridView gvResults;
 
     @Bind(R.id.rvResults)RecyclerView rvResults;
@@ -55,7 +57,19 @@ public class SearchActivity extends AppCompatActivity {
         rvResults.addItemDecoration(itemDecoration);
 
         rvResults.setAdapter(adapter);
-        rvResults.setLayoutManager(new LinearLayoutManager(this));
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvResults.setLayoutManager(linearLayoutManager);
+
+
+        rvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                fetchArticles(searchString, page);
+                int curSize = adapter.getItemCount();
+                adapter.notifyItemRangeInserted(curSize, articles.size() - 1);
+                Log.d("DEBUG", searchString);
+            }
+        });
 
 /*
         rvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,7 +95,10 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                onArticleSearch(query);
+
+                searchString = query;
+                fetchArticles(query, 0);
+
                 return true;
             }
 
@@ -118,31 +135,32 @@ public class SearchActivity extends AppCompatActivity {
         //Toast.makeText(this, "Settings ", Toast.LENGTH_SHORT).show();
     }
 
-    public void onArticleSearch(String query) {
+    public ArrayList<Article> fetchArticles(String query, int page) {
 
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();
         params.put("api-key", "45a7603076c2721c61f5253eea5052b4:5:60985033");
-        //params.put("page", 0);
+        params.put("page", page);
         params.put("q", query);
+
+        final ArrayList<Article> _articles = new ArrayList<>();
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
+                //Log.d("DEBUG", response.toString());
 
                 JSONArray articleJsonResults = null;
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    Log.d("DEBUG", articleJsonResults.toString());
+                    //Log.d("DEBUG", articleJsonResults.toString());
 
+                    articles.clear();
                     articles.addAll(Article.fromJSONArray(articleJsonResults));
                     adapter.notifyDataSetChanged();
 
-                    //adapter.addAll(Article.fromJSONArray(articleJsonResults));
-
-                    Log.d("DEBUG", articles.toString());
+                    //Log.d("DEBUG", articles.toString());
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -150,5 +168,6 @@ public class SearchActivity extends AppCompatActivity {
         });
 
 
+        return _articles;
     }
 }
