@@ -2,7 +2,9 @@ package project.codepath.nytimessearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -33,9 +35,7 @@ import project.codepath.nytimessearch.models.Article;
 
 public class SearchActivity extends AppCompatActivity {
 
-    @Bind(R.id.etQuery) EditText etQuery;
     @Bind(R.id.gvResults)GridView gvResults;
-    @Bind(R.id.btnSearch) Button btnSearch;
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
@@ -70,7 +70,24 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
-        return true;
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                onArticleSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -97,16 +114,13 @@ public class SearchActivity extends AppCompatActivity {
         //Toast.makeText(this, "Settings ", Toast.LENGTH_SHORT).show();
     }
 
-    public void onArticleSearch(View view) {
-
-        String query = etQuery.getText().toString();
-        Toast.makeText(this, "Searching for " + query.toString(), Toast.LENGTH_SHORT).show();
+    public void onArticleSearch(String query) {
 
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();
         params.put("api-key", "45a7603076c2721c61f5253eea5052b4:5:60985033");
-        params.put("page", 0);
+        //params.put("page", 0);
         params.put("q", query);
 
         client.get(url, params, new JsonHttpResponseHandler() {
