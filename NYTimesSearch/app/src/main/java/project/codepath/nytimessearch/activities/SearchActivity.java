@@ -88,6 +88,15 @@ public class SearchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void onSettingsAction(MenuItem menuItem) {
+
+        Intent intent = new Intent(SearchActivity.this, Settings.class);
+
+        startActivity(intent);
+
+        //Toast.makeText(this, "Settings ", Toast.LENGTH_SHORT).show();
+    }
+
     public void onArticleSearch(View view) {
 
         String query = etQuery.getText().toString();
