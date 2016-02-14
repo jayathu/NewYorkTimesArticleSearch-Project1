@@ -6,18 +6,8 @@
     android:layout_height="match_parent"
     android:background="#EEEEEE">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivImage"
-        android:src="@mipmap/ic_launcher"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:minHeight="50dp"
-        />
-
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvTitleNoThumbnail"
         android:text="Making Music On An Android Tablet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +20,7 @@
         android:padding="10dp"/>
 
     <TextView
-        android:id="@+id/tvSnippet"
+        android:id="@+id/tvSnippetNoThumbnail"
         android:text="Making Music On An Android Tablet, Making Music On An Android Tablet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

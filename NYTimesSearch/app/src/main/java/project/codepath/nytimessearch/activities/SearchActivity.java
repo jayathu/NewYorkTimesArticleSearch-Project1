@@ -32,6 +32,7 @@ import project.codepath.nytimessearch.ItemClickSupport;
 import project.codepath.nytimessearch.R;
 import project.codepath.nytimessearch.adapters.ArticleRecyclerAdapter;
 import project.codepath.nytimessearch.models.Article;
+import project.codepath.nytimessearch.models.ArticleFactory;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -160,7 +161,7 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
 
-                    articles.addAll(Article.fromJSONArray(articleJsonResults));
+                    articles.addAll(ArticleFactory.fromJSONArray(articleJsonResults));
                     adapter.notifyDataSetChanged();
 
                 }catch (JSONException e) {
