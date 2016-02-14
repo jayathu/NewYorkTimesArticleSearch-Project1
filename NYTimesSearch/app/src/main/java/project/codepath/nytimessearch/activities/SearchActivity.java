@@ -4,17 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -29,16 +25,18 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
+import project.codepath.nytimessearch.DividerItemDecoration;
 import project.codepath.nytimessearch.R;
-import project.codepath.nytimessearch.adapters.ArticleArrayAdapter;
+import project.codepath.nytimessearch.adapters.ArticleRecyclerAdapter;
 import project.codepath.nytimessearch.models.Article;
 
 public class SearchActivity extends AppCompatActivity {
 
-    @Bind(R.id.gvResults)GridView gvResults;
+    //@Bind(R.id.gvResults)GridView gvResults;
 
+    @Bind(R.id.rvResults)RecyclerView rvResults;
     ArrayList<Article> articles;
-    ArticleArrayAdapter adapter;
+    ArticleRecyclerAdapter adapter;
 
 
     @Override
@@ -51,10 +49,16 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         articles = new ArrayList<>();
-        adapter = new ArticleArrayAdapter(this, articles);
-        gvResults.setAdapter(adapter);
+        adapter = new ArticleRecyclerAdapter(articles);
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST);
+        rvResults.addItemDecoration(itemDecoration);
 
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        rvResults.setAdapter(adapter);
+        rvResults.setLayoutManager(new LinearLayoutManager(this));
+
+/*
+        rvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), ArticleDetails.class);
@@ -62,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
                 intent.putExtra("url", article.getWebUrl());
                 startActivity(intent);
             }
-        });
+        });*/
 
     }
 
@@ -133,10 +137,10 @@ public class SearchActivity extends AppCompatActivity {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     Log.d("DEBUG", articleJsonResults.toString());
 
-                    //articles.addAll(Article.fromJSONArray(articleJsonResults));
-                    //adapter.notifyDataSetChanged();
+                    articles.addAll(Article.fromJSONArray(articleJsonResults));
+                    adapter.notifyDataSetChanged();
 
-                    adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                    //adapter.addAll(Article.fromJSONArray(articleJsonResults));
 
                     Log.d("DEBUG", articles.toString());
                 }catch (JSONException e) {

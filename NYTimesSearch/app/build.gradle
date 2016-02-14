@@ -33,4 +33,7 @@ dependencies {
 
     //load remote images from the server into the views
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    //RecyclerView Support
+    compile 'com.android.support:recyclerview-v7:23.1.1'
 }
