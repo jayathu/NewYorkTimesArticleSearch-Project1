@@ -33,6 +33,7 @@ import project.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
 import project.codepath.nytimessearch.ItemClickSupport;
 import project.codepath.nytimessearch.R;
 import project.codepath.nytimessearch.adapters.ArticleRecyclerAdapter;
+import project.codepath.nytimessearch.dialogs.QueryFiltersDialog;
 import project.codepath.nytimessearch.models.Article;
 import project.codepath.nytimessearch.models.ArticleFactory;
 import project.codepath.nytimessearch.models.QueryFilters;
@@ -42,6 +43,8 @@ public class SearchActivity extends AppCompatActivity {
     private String searchString;
     private QueryFilters filters;
 
+
+    private String filtersString;
 
     @Bind(R.id.rvResults)RecyclerView rvResults;
     ArrayList<Article> articles;
@@ -54,9 +57,8 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         ButterKnife.bind(this);
-        filters = new QueryFilters();
+        filters = new QueryFilters(1, 1, 2015, null, null);
 
         articles = new ArrayList<>();
         adapter = new ArticleRecyclerAdapter(articles);
@@ -72,8 +74,6 @@ public class SearchActivity extends AppCompatActivity {
         rvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-
-                //articles.clear();
 
                 fetchArticles(searchString, page);
                 int curSize = adapter.getItemCount();
@@ -150,8 +150,27 @@ public class SearchActivity extends AppCompatActivity {
         {
             filters = (QueryFilters)Parcels.unwrap(data.getParcelableExtra("query_filters"));
 
-            Toast.makeText(this, "begin_date:"+filters.beginDate + "news_desk:"+ filters.news_desk + "sort:"+ filters.sortOrder, Toast.LENGTH_LONG).show();
+            String news_desk_params = "";
+            if(!filters.news_desk.equals(""))
+            {
+                news_desk_params = "&news_desk:(" + filters.news_desk + ")";
+            }
+
+            String sort_order_params = "&sort_order="+ filters.sortOrder;
+            String date_params = "&begin_date="+ filters.beginDateString;
+
+            filtersString = date_params + news_desk_params + sort_order_params;
+            Toast.makeText(this, filtersString, Toast.LENGTH_LONG).show();
+
+
         }
+    }
+
+    public void showEditDialog() {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+
+        QueryFiltersDialog dialog = QueryFiltersDialog.newInstance("", "", "");
+        dialog.show(fragmentManager, "update_filter_settings");
     }
 
     public void onSettingsAction(MenuItem menuItem) {
@@ -172,6 +191,7 @@ public class SearchActivity extends AppCompatActivity {
         params.put("api-key", "45a7603076c2721c61f5253eea5052b4:5:60985033");
         params.put("page", page);
         params.put("q", query);
+        params.put("fq", filtersString);
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -187,6 +207,11 @@ public class SearchActivity extends AppCompatActivity {
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("FAILURE ", filtersString);
             }
         });
 

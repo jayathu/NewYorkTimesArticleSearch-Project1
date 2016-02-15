@@ -24,16 +24,23 @@ public class Settings extends AppCompatActivity {
 
     DatePickerDialog datePickerDialog;
 
+    @Bind(R.id.tvDebug) TextView tvDebug;
     @Bind(R.id.tvBeginDate) TextView tvBeginDate;
+
+    @Bind(R.id.tvBeginDateVal)TextView tvBeginDateVal;
 
     @Bind(R.id.spinnerSortOrder) Spinner spinner;
     @Bind(R.id.cb_option_politics)CheckBox cb_option_politics;
     @Bind(R.id.cb_option_Sports)CheckBox cb_option_Sports;
     @Bind(R.id.cb_option_tech)CheckBox cb_option_tech;
 
-    private String beginDate;
+
+
+    private int month;
+    private int day;
+    private int year;
     private String sortOrder;
-    private String news_desk;
+    private String news_desk_values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,22 +50,34 @@ public class Settings extends AppCompatActivity {
         Intent intent = getIntent();
         filters = (QueryFilters) Parcels.unwrap(intent.getParcelableExtra("query_filters"));
 
+        month = filters.month;
+        day = filters.day;
+        year = filters.year;
+        sortOrder = filters.sortOrder;
+        tvBeginDateVal.setText(filters.month + "/" + filters.day + "/" + filters.year);
+
+
         fillOutSpinner();
+
         datePickerDialog = new DatePickerDialog(
                 this, R.style.MyDialogTheme, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
 
-                int month = datePicker.getMonth()+1;
-                int day = datePicker.getDayOfMonth();
-                int year = datePicker.getYear();
+                int _month = datePicker.getMonth()+1;
+                int _day = datePicker.getDayOfMonth();
+                int _year = datePicker.getYear();
 
-                tvBeginDate.setText(month + "/" + day + "/" + year);
 
-                beginDate = year + "" + month + "" + day;
+                month = _month;
+                day = _day;
+                year = _year;
+
+                tvBeginDateVal.setText(month + "/" + day + "/" + year);
+
 
             }
-        }, 2016 , 1, 0);
+        }, filters.year , filters.month+1, filters.day);
     }
 
     public void onBeginDate(View view) {
@@ -76,7 +95,7 @@ public class Settings extends AppCompatActivity {
 
     public void onSaveFilters(View view) {
 
-        if(spinner.getSelectedItem().toString() == "Newest") {
+        if(spinner.getSelectedItem().toString().equalsIgnoreCase("newest")) {
             sortOrder = QueryFilters.NEWEST;
         }
         else {
@@ -84,17 +103,33 @@ public class Settings extends AppCompatActivity {
         }
 
 
+        news_desk_values = "";
+
         if(cb_option_politics.isChecked()){
-            news_desk = "\"Politics\"";
+            news_desk_values += "\"Politics\"";
         }
         if(cb_option_Sports.isChecked()) {
-            news_desk += " \"Sports\"";
+            news_desk_values += " \"Sports\"";
         }
         if(cb_option_tech.isChecked()){
-            news_desk += " \"Technology\"";
+            news_desk_values += " \"Technology\"";
         }
 
-        filters = new QueryFilters(beginDate, sortOrder, news_desk);
+
+
+        //filters = new QueryFilters(month, day, year, sortOrder, news_desk_params);
+        filters = new QueryFilters(month, day, year, sortOrder, news_desk_values);
+
+        /*String news_desk_params = "";
+        if(!news_desk_values.equals(""))
+        {
+            news_desk_params = "&news_desk:" + news_desk_values;
+        }
+        String sort_order_params = "&sort:"+ filters.sortOrder;
+        String date_params = "&begin_date:"+ filters.beginDateString;*/
+
+
+        //tvDebug.setText(date_params +  news_desk_params + sort_order_params);
 
         Intent intent = new Intent();
         intent.putExtra("query_filters", Parcels.wrap(filters));
