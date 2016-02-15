@@ -9,12 +9,11 @@ import org.parceler.Parcel;
 @Parcel
 public class QueryFilters {
 
-    public static final String NEWEST = "newest";
-    public static final String OLDEST = "oldest";
+    public boolean oldest;
+    public boolean politics;
+    public boolean technology;
+    public boolean sports;
 
-    public String beginDateString;
-    public String sortOrder;
-    public String news_desk;
     public int month;
     public int day;
     public int year;
@@ -22,30 +21,76 @@ public class QueryFilters {
     public QueryFilters() {
 
     }
-    public  QueryFilters(int month, int day, int year, String sortOrder, String news_desk) {
+
+    public void setBeginDate(int month, int day, int year) {
 
         this.month = month;
         this.year = year;
         this.day = day;
+    }
 
-        this.beginDateString = String.valueOf(year);
+    public void setSortOrder(boolean oldest) {
+        this.oldest = oldest;
+    }
+
+    public void setNews_desk(boolean politics, boolean technology, boolean sports) {
+        this.politics = politics;
+        this.technology = technology;
+        this.sports = sports;
+    }
+
+    public String getNews_desk() {
+        if(!politics && !technology && !sports) {
+            return "";
+        }
+
+        String news_desk_values = "(";
+
+        if(politics){
+            news_desk_values += "\"Politics\"";
+        }
+        if(sports) {
+            news_desk_values += "\"Sports\"";
+        }
+        if(technology){
+            news_desk_values += "\"Technology\"";
+        }
+
+        news_desk_values += ")";
+
+        return news_desk_values;
+
+    }
+
+    public String getBeginDateString() {
+
+        String beginDateString = String.valueOf(year);
 
         if(month < 10) {
-            this.beginDateString += "0" + month;
+            beginDateString += "0" + month;
         }
         else {
-            this.beginDateString += String.valueOf(month);
+            beginDateString += String.valueOf(month);
         }
         if( day < 10) {
-            this.beginDateString += "0" + day;
+            beginDateString += "0" + day;
         }
         else {
-            this.beginDateString += String.valueOf(day);
+            beginDateString += String.valueOf(day);
         }
 
-        this.sortOrder = sortOrder;
-        this.news_desk = news_desk;
+        return beginDateString;
     }
+
+    public String getSortOrder(){
+        if(oldest){
+            return "oldest";
+        }
+        else{
+            return "newest";
+        }
+    }
+
 
 
 }

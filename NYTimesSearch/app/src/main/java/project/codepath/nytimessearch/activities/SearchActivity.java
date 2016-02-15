@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -58,7 +57,11 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
-        filters = new QueryFilters(1, 1, 2015, null, null);
+
+        filters = new QueryFilters();
+        filters.setBeginDate(1, 1, 2016);
+        filters.setNews_desk(false, false, false);
+        filters.setSortOrder(false);
 
         articles = new ArrayList<>();
         adapter = new ArticleRecyclerAdapter(articles);
@@ -150,19 +153,7 @@ public class SearchActivity extends AppCompatActivity {
         {
             filters = (QueryFilters)Parcels.unwrap(data.getParcelableExtra("query_filters"));
 
-            String news_desk_params = "";
-            if(!filters.news_desk.equals(""))
-            {
-                news_desk_params = "&news_desk:(" + filters.news_desk + ")";
-            }
-
-            String sort_order_params = "&sort_order="+ filters.sortOrder;
-            String date_params = "&begin_date="+ filters.beginDateString;
-
-            filtersString = date_params + news_desk_params + sort_order_params;
-            Toast.makeText(this, filtersString, Toast.LENGTH_LONG).show();
-
-
+            //Toast.makeText(this, date_param+sort_param+news_desk_param, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -191,7 +182,10 @@ public class SearchActivity extends AppCompatActivity {
         params.put("api-key", "45a7603076c2721c61f5253eea5052b4:5:60985033");
         params.put("page", page);
         params.put("q", query);
-        params.put("fq", filtersString);
+        params.put("fq", "news_desk:" + filters.getNews_desk());
+        params.put("sort", filters.getSortOrder());
+        params.put("begin_date", filters.getBeginDateString());
+        Log.d("DEBUG", params.toString());
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -212,6 +206,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.d("FAILURE ", filtersString);
+                Log.d("FAILURE_ERROR ", errorResponse.toString());
             }
         });
 

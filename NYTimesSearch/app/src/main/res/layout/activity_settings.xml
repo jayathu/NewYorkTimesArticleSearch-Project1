@@ -167,13 +167,5 @@
         android:onClick="onSaveFilters"
         android:layout_gravity="center_horizontal" />
 
-    <TextView
-        android:layout_width="251dp"
-        android:layout_height="wrap_content"
-        android:text="String:"
-        android:id="@+id/tvDebug"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.63" />
-
 
 </LinearLayout>
