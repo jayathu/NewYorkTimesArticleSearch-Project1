@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -38,6 +39,10 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         ButterKnife.bind(this);
         Intent intent = getIntent();
         filters = (QueryFilters) Parcels.unwrap(intent.getParcelableExtra("query_filters"));
@@ -65,6 +70,17 @@ public class Settings extends AppCompatActivity {
 
             }
         }, filters.year , filters.month+1, filters.day);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                SaveSettingsAndFinishActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void setFilterSettings(QueryFilters filters)
@@ -97,7 +113,7 @@ public class Settings extends AppCompatActivity {
 
     }
 
-    public void onSaveFilters(View view) {
+    private void SaveSettingsAndFinishActivity() {
 
         if(spinner.getSelectedItem().toString().equalsIgnoreCase("newest")) {
             filters.setSortOrder(false);
@@ -107,9 +123,9 @@ public class Settings extends AppCompatActivity {
         }
 
         filters.setNews_desk(cb_option_politics.isChecked(),
-                            cb_option_tech.isChecked(),
-                            cb_option_Sports.isChecked()
-                        );
+                cb_option_tech.isChecked(),
+                cb_option_Sports.isChecked()
+        );
 
         Intent intent = new Intent();
         intent.putExtra("query_filters", Parcels.wrap(filters));

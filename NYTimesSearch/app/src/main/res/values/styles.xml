@@ -3,14 +3,21 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimaryGray</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGray</item>
+        <item name="colorAccent">@color/colorAccentGray</item>
+        <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="MyActionBarTabText" parent="@style/Widget.AppCompat.ActionBar.TabText">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -19,9 +26,9 @@
 
     <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorControlNormal">@android:color/white</item>
-        <item name="colorControlActivated">@color/deeporange</item>
+        <item name="colorControlActivated">@color/colorAccentGray</item>
         <item name="textColorAlertDialogListItem">@android:color/white</item>
-        <item name="colorAccent">@color/deeporange</item>
+        <item name="colorAccent">@color/colorAccentGray</item>
         <item name="android:textColorPrimary">@android:color/white</item>
     </style>
 </resources>

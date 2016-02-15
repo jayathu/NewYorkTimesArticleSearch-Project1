@@ -56,6 +56,11 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        /*getSupportActionBar().setLogo(R.drawable.news);
+        getSupportActionBar().setTitle("My new title");
+        getSupportActionBar().setDisplayUseLogoEnabled(true);*/
+
         ButterKnife.bind(this);
 
         filters = new QueryFilters();
