@@ -24,6 +24,8 @@ public class ArticleDetails extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         String url = getIntent().getStringExtra("url");
 
         WebView webView = (WebView)findViewById(R.id.wvArticle);

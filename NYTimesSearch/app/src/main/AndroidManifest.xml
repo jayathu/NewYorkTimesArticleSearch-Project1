@@ -24,7 +24,8 @@
         <activity
             android:name=".activities.ArticleDetails"
             android:label="@string/title_activity_article_details"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.SearchActivity"/>
         <activity android:name=".activities.Settings"
             android:label="Customize Sections"
             android:parentActivityName=".activities.SearchActivity">

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -135,6 +136,16 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        MenuItem miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        // Extract the action-view from the menu item
+        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -187,7 +198,11 @@ public class SearchActivity extends AppCompatActivity {
         params.put("api-key", "45a7603076c2721c61f5253eea5052b4:5:60985033");
         params.put("page", page);
         params.put("q", query);
-        params.put("fq", "news_desk:" + filters.getNews_desk());
+
+        String news_desk_params = filters.getNews_desk();
+        if(news_desk_params != "") {
+            params.put("fq", "news_desk:" + filters.getNews_desk());
+        }
         params.put("sort", filters.getSortOrder());
         params.put("begin_date", filters.getBeginDateString());
         Log.d("DEBUG", params.toString());
